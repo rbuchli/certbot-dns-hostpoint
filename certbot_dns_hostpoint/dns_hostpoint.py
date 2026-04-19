@@ -1,10 +1,10 @@
-from typing import Any, Callable, Optional
 import json
 import logging
 import random
-import requests
 import string
+from typing import Any, Callable, Optional
 
+import requests
 from certbot.configuration import NamespaceConfig
 from certbot.errors import PluginError
 from certbot.plugins.dns_common import DNSAuthenticator, CredentialsConfiguration
@@ -134,7 +134,7 @@ class _DnsTransaction:
 
     def add_txt_record(self, record_name: str, record_content: str, record_ttl: int) -> None:
         subpart = record_name.removesuffix('.' + self.domain)
-        id = ''.join(random.choice(string.ascii_lowercase) for _ in range(9))
+        idused = ''.join(random.choice(string.ascii_lowercase) for _ in range(9))
         self.records.append({
             "ipv6address_public": None,
             "hostname": None,
@@ -151,7 +151,7 @@ class _DnsTransaction:
             "_is_editable": True,
             "subpart": subpart,
             "_is_deletable": True,
-            "id": id,
+            "id": idused,
             "priority": None,
             "_is_modifiable": True,
             "content_tokens": {
@@ -249,15 +249,18 @@ class Authenticator(DNSAuthenticator):
 
     def _perform(self, domain: str, validation_name: str, validation: str) -> None:
         self._get_hostpoint_client().add_txt_record(
-            self.credentials.conf(Authenticator.CONF_DOMAIN), validation_name, validation, self.ttl)
+            self.credentials.conf(Authenticator.CONF_DOMAIN),
+            validation_name,
+            validation,
+            self.ttl)
 
     def _cleanup(self, domain: str, validation_name: str, validation: str) -> None:
         self._get_hostpoint_client().delete_txt_record(
             self.credentials.conf(Authenticator.CONF_DOMAIN), validation_name, validation)
 
-    def _get_hostpoint_client(self) -> _HostpointClient:
+    def _get_hostpoint_client(self) -> _HostpointClient | None:
         if not self.hostpoint_client:
-            assert(self.credentials)
+            assert self.credentials
             self.hostpoint_client = _HostpointClient(self.credentials.conf(
                 Authenticator.CONF_USERNAME), self.credentials.conf(Authenticator.CONF_PASSWORD))
         return self.hostpoint_client

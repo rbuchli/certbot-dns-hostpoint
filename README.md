@@ -1,11 +1,11 @@
-***This project is no longer maintained as I am not using Hostpoint anymore. As of writing this, the plugin is working fine. Feel free to continue using it, or fork it.***
+***Forked (as suggested) from wooky/certbot-dns-hostpoint***
 ---
 
 # certbot-dns-hostpoint
 
 [Hostpoint](https://www.hostpoint.ch/en/) DNS Authenticator plugin for Certbot.
 
-This plugin automates the process of completing a dns-01 challenge by creating, and subsequently removing, TXT records by manually calling Hostpoint HTTP endpoints, as Hostpoint does not have a publically accessible REST API.
+This plugin automates the process of completing a dns-01 challenge by creating, and subsequently removing, TXT records by manually calling Hostpoint HTTP endpoints, as Hostpoint does not have a publicly accessible REST API.
 
 ## Installation
 
@@ -43,12 +43,13 @@ dns_hostpoint_password=password
 dns_hostpoint_domain=example.tld
 ```
 
-Then, you can run Certbot with the base and wildcard domains like this:
+Then, you can run Certbot with the base and wildcard domains like this, 
+the ini-file stored one level below the git repository.
 
 ```bash
 certbot certonly \
   --authenticator dns-hostpoint \
-  --dns-hostpoint-credentials /path/to/hostpoint.ini \
+  --dns-hostpoint-credentials ../hostpoint.ini \
   -d 'example.tld' \
   -d '*.example.tld' \
   -d '*.subdomain.example.tld'
@@ -58,4 +59,4 @@ certbot certonly \
 
 If you get this error, it most likely means that Hostpoint requires you to enter a verification code. This plugin will not work until that issue is resolved.
 
-Simply log in to Hostpoint through a browser on the same IP as the plugin is run, enter the verification code, and afterwards the plugin should start working. If you're unable to run a browser from the remote host, use a SOCKS5 proxy instead.
+Simply log in to Hostpoint through a browser on the same IP as the plugin is run, enter the verification code, and afterward the plugin should start working. If you're unable to run a browser from the remote host, use a SOCKS5 proxy instead.
